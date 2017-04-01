@@ -125,7 +125,7 @@
 		methods: {
 			// 是否激活显示描述
 			formatActivated: function(row, column) {
-				return row.activated === true ? '已激活' : row.activated === false ? '未激活' : '未知状态';
+				return row.enable === true ? '已激活' : row.enable === false ? '未激活' : '未知状态';
 			},
 
 			// 是否在线状态

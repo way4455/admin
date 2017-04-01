@@ -26,6 +26,11 @@ export const getAppUserList = (params, headers) => { return axios.get(`${base}/a
 // 获取LogcatList
 export const getLogcatList = (params, headers) => { return axios.get(`${base}/logcat/list`, { params: params, headers:headers }); };
 
+// 获取数据端点
+export const getDataPointList = (params, headers) => { return axios.get(`${base}/datapoint/list`, { params: params, headers:headers }); };
+export const addDataPoint = (params, headers) => { return axios.post(`${base}/datapoint/add`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+export const delDataPoint = (params, headers) => { return axios.post(`${base}/datapoint/del`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+export const updateDataPoint = (params, headers) => { return axios.post(`${base}/datapoint/update`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
 
 export const getUserList = params => { return axios.get(`${base}/user/list`, { params: params }); };
 

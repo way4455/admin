@@ -3,6 +3,9 @@ import NotFound from './pages/404.vue'
 import AdminInfo from './pages/admin/admininfo.vue'
 import GateWayList from './pages/gateway/gatewaylist.vue'
 import AppUserList from './pages/appuser/appuserlist.vue'
+import AppList from './pages/app/applist.vue'
+import DataPointList from './pages/datapoint/datapointlist.vue'
+import AlarmNotifList from './pages/alarmnotif/alarmnotiflist.vue'
 import LogcatList from './pages/logcat/logcatlist.vue'
 import Home from './pages/Home.vue'
 import Main from './pages/Main.vue'
@@ -55,6 +58,36 @@ let routes = [
       leaf: true, // 只有一个节点
       children:[
         {path:'/appuser', component: AppUserList, name:'用户列表', hidden:false}
+      ]
+    },
+    {
+      path: '/',
+      component: Home,
+      name: '应用列表',
+      iconCls: 'el-icon-message',
+      leaf: true, // 只有一个节点
+      children:[
+        {path:'/app', component: AppList, name:'应用列表', hidden:false}
+      ]
+    },
+    {
+      path: '/',
+      component: Home,
+      name: '数据端点',
+      iconCls: 'el-icon-message',
+      leaf: true, // 只有一个节点
+      children:[
+        {path:'/datapoints', component: DataPointList, name:'数据端点', hidden:false}
+      ]
+    },
+    {
+      path: '/',
+      component: Home,
+      name: '报警通知列表',
+      iconCls: 'el-icon-message',
+      leaf: true, // 只有一个节点
+      children:[
+        {path:'/alarmnotif', component: AlarmNotifList, name:'报警通知列表', hidden:false}
       ]
     },
     {
