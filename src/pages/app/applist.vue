@@ -7,7 +7,7 @@
 					<el-input v-model="filters.mac" placeholder="MAC"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getDataPoints">查询</el-button>
+					<el-button type="primary" v-on:click="getApplications">查询</el-button>
 				</el-form-item-->
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -17,18 +17,18 @@
 
 		<!--列表-->
 		<template>
-			<el-table :data="datapoints" border highlight-current-row v-loading="listLoading" style="width: 100%;">
+			<el-table :data="applications" border highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<!--el-table-column type="index" width="60">
 				</el-table-column-->
-				<el-table-column prop="index" label="索引" min-width="100" sortable>
+				<el-table-column prop="uid" label="应用ID" min-width="140" sortable>
 				</el-table-column>
-				<el-table-column prop="id" label="端点ID" min-width="140" sortable>
+				<el-table-column prop="name" label="应用名称" min-width="140" sortable>
 				</el-table-column>
-				<el-table-column prop="type" label="数据类型" :formatter="formatDataType" min-width="140" sortable>
+				<el-table-column prop="access_key" label="Access Key Secret" min-width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="unit" label="单位符号" min-width="120" sortable>
+				<el-table-column prop="platform" label="应用类型" :formatter="formatPlatform" min-width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="desc" label="描述" min-width="180" sortable>
+				<el-table-column prop="create_at" label="创建时间" :formatter="formatCreateDate" min-width="180" sortable>
 				</el-table-column>
 				<el-table-column inline-template :context="_self" label="操作" min-width="160">
 					<span>
@@ -48,22 +48,39 @@
 	<!--编辑界面-->
 	<el-dialog :title="editFormTitle" size="tiny" v-model="editFormVisible" :close-on-click-modal="false">
 		<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm" >
-			<el-form-item label="索引" prop="index">
-				<el-input v-model.number="editForm.index" auto-complete="off" placeholder="数据端点索引不能重复" :disabled="isIndexReadOnly"></el-input>
+			<el-form-item label="应用ID" prop="uid" :show-message="false">
+				<el-input v-model="editForm.uid" auto-complete="off" placeholder="" :disabled="isUidReadOnly"></el-input>
 			</el-form-item>
-			<el-form-item label="端点ID" prop="id">
-				<el-input v-model.number="editForm.id" auto-complete="off" placeholder="英文、数字或下划线" :disabled="isIdReadOnly"></el-input>
+			<el-form-item label="应用名称" prop="name">
+				<el-input v-model="editForm.name" auto-complete="off" placeholder="英文、数字或下划线" :disabled="isIdReadOnly"></el-input>
 			</el-form-item>
-			<el-form-item label="数据类型">
-				<el-select v-model="editForm.type" prop="type">
+			<el-form-item label="应用平台类型" prop="platform">
+				<el-select v-model="editForm.platform">
 						<el-option v-for="item in options" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="单位符号" prop="unit">
-				<el-input type="textarea" :rows="2" v-model="editForm.unit" placeholder="例如: ℃"></el-input>
+			<el-form-item label="消息通知" prop="apn_on">
+				<el-checkbox v-model="editForm.apn_on">启用苹果APN服务</el-checkbox>
 			</el-form-item>
-			<el-form-item label="描述" prop="desc">
-				<el-input type="textarea" :rows="2" v-model="editForm.desc" placeholder="请填写数据端点描述"></el-input>
+			<el-form-item label="APN授权文件" prop="p12">
+				<el-upload
+				  class="upload-demo"
+				  action="http://192.168.1.88:8080/OraAPIServer/v2/p12/">
+				  <el-button size="small" type="primary">上传p12文件</el-button>
+				  <div slot="tip" class="el-upload__tip">只能上传p12文件，且不超过500kb</div>
+				</el-upload>
+			</el-form-item>
+			<el-form-item label="文件密码" prop="p12passwd">
+				<el-input v-model="editForm.p12passwd" placeholder="请输入授权文件的密码"></el-input>
+			</el-form-item>
+			<el-form-item label="" prop="production">
+				<el-checkbox v-model="editForm.production">正式发布APN密匙文件</el-checkbox>
+			</el-form-item>
+			<el-form-item label="消息通知" prop="googleplay_on">
+				<el-checkbox v-model="editForm.googleplay_on">启用GooglePlay服务</el-checkbox>
+			</el-form-item>
+			<el-form-item label="Server API Key" prop="server_api_key">
+				<el-input v-model="editForm.server_api_key" auto-complete="off" placeholder="请输入授权文件的密码" ></el-input>
 			</el-form-item>
 		</el-form>
 		<div slot="footer" class="dialog-footer">
@@ -77,7 +94,7 @@
 <script>
 	import util from '../../common/util'
 	import NProgress from 'nprogress'
-	import { getAccessToken, getDataPointList, addDataPoint, delDataPoint, updateDataPoint } from '../../api/api';
+	import { getAccessToken, getYYYYMMDDHHmmssFromTimestamp, getApplicationList, addApplication, delApplication, updateApplication } from '../../api/api';
 
 	export default {
 		data() {
@@ -97,12 +114,11 @@
 					}
 				}, 1000);
 			};
-			var checkId = (rule, value, callback) => {
-				if (null==value) {
-					return callback(new Error('端点ID不能为空'));
-				}
-				if (value !== this.editForm.index) {
-					return callback(new Error('端点ID要与数据索引相同'));
+			var checkP12Passwd = (rule, value, callback) => {
+				if (this.editForm.apn_on==true) {
+					if (null==value || value=='') {
+						return callback(new Error('文件密匙不能为空'));
+					}
 				}
 				callback();
 			};
@@ -116,18 +132,18 @@
 				},
 				options: [{
 				 value: 0,
-				 label: '字符串'
+				 label: 'iOS'
 			 }, {
 				 value: 1,
-				 label: '布尔类型'
+				 label: 'Android'
+			 }, {
+				 value: 2,
+				 label: 'Web'
 			 }, {
 				 value: 3,
-				 label: '整形'
-			 }, {
-				 value: 4,
-				 label: '浮点型'
+				 label: '微信'
 			 }],
-				datapoints: [],
+				applications: [],
 				devices: [],
 				total: 0,
 				page: 1,
@@ -137,33 +153,31 @@
 				editFormTitle: '编辑',//编辑界面标题
 				isIndexReadOnly: false,
 				isIdReadOnly: false,
+				isUidReadOnly: false,
+				isUpoadP12ReadOnly: true,
 				//编辑界面数据
 				editForm: {
-					editing: false,
-					index: 0,
-					id: 0,
-					type: 0,
-					unit: '',
-					desc: ''
+					uid: '',
+					name: '',
+					platform: 0,
+					apn_on: false,
+					p12passwd: '',
+					production: false,
+					googleplay_on: false,
+					server_api_key: ''
 				},
 				editLoading: false,
 				btnEditText: '提 交',
 				editFormRules: {
-					index: [
-						{ validator: checkIndex, trigger: 'blur' }
+					name: [
+						{ required: true, message: '请输入应用名称', trigger: 'blur' }
 					],
-					id: [
-						{ validator: checkId, trigger: 'blur' }
+					p12passwd: [
+						{ validator: checkP12Passwd, trigger: 'blur' }
 					],
-					type: [
-            { type: 'array', required: true, message: '请至少选择一个端点数据类型', trigger: 'change' }
-          ],
-					unit: [
-						{ required: true, message: '请输入端点单位，如摄氏度', trigger: 'blur' }
-					],
-					desc: [
-						{ required: true, message: '请输入端点描述', trigger: 'blur' }
-					],
+					platform: [
+            { type: 'number', required: true, message: '请选择一个应用平台', trigger: 'change' }
+          ]
 				}
 			}
 		},
@@ -173,12 +187,17 @@
 				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 			},
 
+			// 格式化时间显示
+			formatCreateDate: function(row, column) {
+				return getYYYYMMDDHHmmssFromTimestamp('YYYY-MM-DD HH:mm:SS', row.create_at);
+			},
+
 			// 格式化数据端点类型
-			formatDataType: function(row, column) {
+			formatPlatform: function(row, column) {
 				var typeDesc = "未知类型";
 				for (var n=0; n<this.options.length; ++n) {
 					var aType = this.options[n];
-					if (aType.value === row.type) {
+					if (aType.value === row.platform) {
 						typeDesc = aType.label;
 						break;
 					}
@@ -193,27 +212,27 @@
 
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getDataPoints();
+				this.getApplications();
 			},
 
 			handleSizeChange(val) {
 				this.pageSize = val;
-				this.getDataPoints();
+				this.getApplications();
 			},
 
-			// 获取数据端点列表
-			getDataPoints() {
+			// 获取应用列表
+			getApplications() {
 				let param = {
 					page: this.page,
 					page_size : this.pageSize
 				};
-				console.log("getDataPoints start.");
+				console.log("getApplications start.");
 				this.listLoading = true;
 				NProgress.start();
-				getDataPointList(param, getAccessToken()).then((res) => {
-					console.log("getDataPoints total:"+res.data.total);
+				getApplicationList(param, getAccessToken()).then((res) => {
+					console.log("getApplications total:"+res.data.total);
 					this.total = res.data.total;
-					this.datapoints = res.data.datapoints;
+					this.applications = res.data.applications;
 					this.listLoading = false;
 					NProgress.done();
 				});
@@ -228,10 +247,9 @@
 					_this.listLoading = true;
 					NProgress.start();
 					let para = {
-						id: row.id,
-						index: row.index
+						uid: row.uid
 					};
-					delDataPoint(para, getAccessToken()).then((res) => {
+					delApplication(para, getAccessToken()).then((res) => {
 						_this.listLoading = false;
 						NProgress.done();
 						_this.$notify({
@@ -239,7 +257,7 @@
 							message: '删除成功',
 							type: 'success'
 						});
-						_this.getDataPoints();
+						_this.getApplications();
 					});
 
 				}).catch(() => {
@@ -251,13 +269,17 @@
 				this.isIdReadOnly = true;
 				this.isIndexReadOnly = true;
 				this.editFormVisible = true;
-				this.editFormTitle = '编辑数据端点';
+				this.editFormTitle = '编辑应用程序';
 				this.editForm.editing = true;
-				this.editForm.id = row.id;
-				this.editForm.index = row.index;
-				this.editForm.type = row.type;
-				this.editForm.unit = row.unit;
-				this.editForm.desc = row.desc;
+
+				this.editForm.uid = row.uid;
+				this.editForm.name = row.name;
+				this.editForm.platform = row.platform;
+				this.editForm.apn_on = row.apn_on;
+				this.editForm.p12passwd = row.p12passwd;
+				this.editForm.production = row.production;
+				this.editForm.googleplay_on = row.googleplay_on;
+				this.editForm.server_api_key = row.server_api_key;
 			},
 			//编辑 or 新增
 			editSubmit: function () {
@@ -274,13 +296,15 @@
 							if (false == _this.editForm.editing) {
 								//新增
 								let para = {
-									id: _this.editForm.id,
-									index: _this.editForm.index,
-									type: _this.editForm.type,
-									unit: _this.editForm.unit,
-									desc: _this.editForm.desc
+									name: _this.editForm.name,
+									platform: _this.editForm.platform,
+									apn_on: _this.editForm.apn_on,
+									p12passwd: _this.editForm.p12passwd,
+									production: _this.editForm.production,
+									googleplay_on: _this.editForm.googleplay_on,
+									server_api_key: _this.editForm.server_api_key
 								};
-								addDataPoint(para, getAccessToken()).then((res) => {
+								addApplication(para, getAccessToken()).then((res) => {
 									_this.editLoading = false;
 									NProgress.done();
 									_this.btnEditText = '提 交';
@@ -292,18 +316,21 @@
 										type: ret===0 ? 'success' : 'error'
 									});
 									_this.editFormVisible = false;
-									_this.getDataPoints();
+									_this.getApplications();
 								});
 							} else {
 								//编辑
 								let para = {
-									id: _this.editForm.id,
-									index: _this.editForm.index,
-									type: _this.editForm.type,
-									unit: _this.editForm.unit,
-									desc: _this.editForm.desc
+									uid: _this.editForm.uid,
+									name: _this.editForm.name,
+									platform: _this.editForm.platform,
+									apn_on: _this.editForm.apn_on,
+									p12passwd: _this.editForm.p12passwd,
+									production: _this.editForm.production,
+									googleplay_on: _this.editForm.googleplay_on,
+									server_api_key: _this.editForm.server_api_key
 								};
-								updateDataPoint(para, getAccessToken()).then((res) => {
+								updateApplication(para, getAccessToken()).then((res) => {
 									_this.editLoading = false;
 									NProgress.done();
 									_this.btnEditText = '提 交';
@@ -313,7 +340,7 @@
 										type: 'success'
 									});
 									_this.editFormVisible = false;
-									_this.getDataPoints();
+									_this.getApplications();
 								});
 
 							}
@@ -329,20 +356,23 @@
 				var _this = this;
 
 				this.isIdReadOnly = false;
-				this.isIndexReadOnly = false;
-
+				this.isUidReadOnly = true;
 				this.editFormVisible = true;
-				this.editFormTitle = '添加数据端点';
+				this.editFormTitle = '添加应用';
 				this.editForm.editing = false;
-				this.editForm.index = null;
-				this.editForm.id = null;
-				this.editForm.type = 0;
-				this.editForm.unit = '';
-				this.editForm.desc = '';
+
+				_this.editForm.uid = '';
+				_this.editForm.name = '';
+				_this.editForm.platform = 0;
+				_this.editForm.apn_on = false;
+				_this.editForm.p12passwd = '';
+				_this.editForm.production = false;
+				_this.editForm.googleplay_on = false;
+				_this.editForm.server_api_key = '';
 			}
 		},
 		mounted() {
-			this.getDataPoints();
+			this.getApplications();
 		}
 	}
 </script>

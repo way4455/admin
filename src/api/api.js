@@ -32,6 +32,21 @@ export const addDataPoint = (params, headers) => { return axios.post(`${base}/da
 export const delDataPoint = (params, headers) => { return axios.post(`${base}/datapoint/del`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
 export const updateDataPoint = (params, headers) => { return axios.post(`${base}/datapoint/update`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
 
+// 获取应用信息
+export const getApplicationList = (params, headers) => { return axios.get(`${base}/application/list`, { params: params, headers:headers }); };
+export const getiOSApplicationList = (params, headers) => { return axios.get(`${base}/application/ioslist`, { params: params, headers:headers }); };
+export const getAndroidApplicationList = (params, headers) => { return axios.get(`${base}/application/androidlist`, { params: params, headers:headers }); };
+export const addApplication = (params, headers) => { return axios.post(`${base}/application/add`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+export const delApplication = (params, headers) => { return axios.post(`${base}/application/del`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+export const updateApplication = (params, headers) => { return axios.post(`${base}/application/update`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+
+// 获取报警通知信息
+export const getAlarmNotiList = (params, headers) => { return axios.get(`${base}/alarmnoti/list`, { params: params, headers:headers }); };
+export const addAlarmNoti = (params, headers) => { return axios.post(`${base}/alarmnoti/add`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+export const delAlarmNoti = (params, headers) => { return axios.post(`${base}/alarmnoti/del`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+export const updateAlarmNoti = (params, headers) => { return axios.post(`${base}/alarmnoti/update`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
+
+
 export const getUserList = params => { return axios.get(`${base}/user/list`, { params: params }); };
 
 export const getUserListPage = params => { return axios.get(`${base}/user/listpage`, { params: params }); };
@@ -56,4 +71,22 @@ export const getAccessToken = () => {
   }
   let ret = '{"Content-Type":"application/json", "Access-Token":""}';
   return JSON.parse(ret);
+}
+
+/**
+ * 和PHP一样的时间戳格式化函数
+ * @param {string} format 格式
+ * @param {int} timestamp 要格式化的时间 默认为当前时间
+ * @return {string}   格式化的时间字符串
+ */
+function add0(m){return m<10?'0'+m:m }
+export const getYYYYMMDDHHmmssFromTimestamp = (format, timestamp) => {
+  var time = new Date(timestamp);
+  var y = time.getFullYear();
+  var m = time.getMonth()+1;
+  var d = time.getDate();
+  var h = time.getHours();
+  var mm = time.getMinutes();
+  var s = time.getSeconds();
+  return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
 }
