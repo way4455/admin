@@ -48,38 +48,42 @@
 	<!--编辑界面-->
 	<el-dialog :title="editFormTitle" size="tiny" v-model="editFormVisible" :close-on-click-modal="false">
 		<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm" >
-			<el-form-item label="应用ID" prop="uid" :show-message="false">
+			<el-form-item label="应用ID" prop="uid" :show-message="false" v-if="isUidShow">
 				<el-input v-model="editForm.uid" auto-complete="off" placeholder="" :disabled="isUidReadOnly"></el-input>
 			</el-form-item>
 			<el-form-item label="应用名称" prop="name">
 				<el-input v-model="editForm.name" auto-complete="off" placeholder="英文、数字或下划线" :disabled="isIdReadOnly"></el-input>
 			</el-form-item>
 			<el-form-item label="应用平台类型" prop="platform">
-				<el-select v-model="editForm.platform">
+				<el-select v-model="editForm.platform" @change="handlePlatformChanged">
 						<el-option v-for="item in options" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="消息通知" prop="apn_on">
+			<el-form-item label="消息通知" prop="apn_on" v-if="isIosPlatformShow">
 				<el-checkbox v-model="editForm.apn_on">启用苹果APN服务</el-checkbox>
 			</el-form-item>
-			<el-form-item label="APN授权文件" prop="p12">
+			<el-form-item label="APN授权文件" prop="p12" v-if="isIosPlatformShow">
 				<el-upload
 				  class="upload-demo"
-				  action="http://192.168.1.88:8080/OraAPIServer/v2/p12/">
+					:multiple="false"
+					:show-file-list="false"
+					:headers="getAccessTokenMethod(editForm.uid)"
+				  :action="getApnUploadRequestUrl()"
+					>
 				  <el-button size="small" type="primary">上传p12文件</el-button>
 				  <div slot="tip" class="el-upload__tip">只能上传p12文件，且不超过500kb</div>
 				</el-upload>
 			</el-form-item>
-			<el-form-item label="文件密码" prop="p12passwd">
+			<el-form-item label="文件密码" prop="p12passwd" v-if="isIosPlatformShow">
 				<el-input v-model="editForm.p12passwd" placeholder="请输入授权文件的密码"></el-input>
 			</el-form-item>
-			<el-form-item label="" prop="production">
+			<el-form-item label="" prop="production" v-if="isIosPlatformShow">
 				<el-checkbox v-model="editForm.production">正式发布APN密匙文件</el-checkbox>
 			</el-form-item>
-			<el-form-item label="消息通知" prop="googleplay_on">
+			<el-form-item label="消息通知" prop="googleplay_on" v-if="isAndroidPlatformShow">
 				<el-checkbox v-model="editForm.googleplay_on">启用GooglePlay服务</el-checkbox>
 			</el-form-item>
-			<el-form-item label="Server API Key" prop="server_api_key">
+			<el-form-item label="Server API Key" prop="server_api_key" v-if="isAndroidPlatformShow">
 				<el-input v-model="editForm.server_api_key" auto-complete="off" placeholder="请输入授权文件的密码" ></el-input>
 			</el-form-item>
 		</el-form>
@@ -94,7 +98,7 @@
 <script>
 	import util from '../../common/util'
 	import NProgress from 'nprogress'
-	import { getAccessToken, getYYYYMMDDHHmmssFromTimestamp, getApplicationList, addApplication, delApplication, updateApplication } from '../../api/api';
+	import { getAccessToken, getAccessTokenHeaders, apnUploadRequestUrl, getYYYYMMDDHHmmssFromTimestamp, getApplicationList, addApplication, delApplication, updateApplication } from '../../api/api';
 
 	export default {
 		data() {
@@ -143,6 +147,7 @@
 				 value: 3,
 				 label: '微信'
 			 }],
+			 	theAccessToken: {"Access-Token":"sessionStorage.getItem('user').access_token"},
 				applications: [],
 				devices: [],
 				total: 0,
@@ -153,7 +158,10 @@
 				editFormTitle: '编辑',//编辑界面标题
 				isIndexReadOnly: false,
 				isIdReadOnly: false,
-				isUidReadOnly: false,
+				isUidReadOnly: true,
+				isUidShow:false,
+				isIosPlatformShow:false,
+				isAndroidPlatformShow:false,
 				isUpoadP12ReadOnly: true,
 				//编辑界面数据
 				editForm: {
@@ -220,6 +228,34 @@
 				this.getApplications();
 			},
 
+			handlePlatformChanged(val) {
+			console.log('handlePlatformChanged:'+val);
+				if (0===val) {
+					this.isIosPlatformShow = true;
+					this.isAndroidPlatformShow = false;
+				}
+				else if (1===val) {
+					this.isIosPlatformShow = false;
+					this.isAndroidPlatformShow = true;
+				}
+			},
+
+			getAccessTokenMethod(uid) {
+				var user = sessionStorage.getItem('user');
+				if (user) {
+					user = JSON.parse(user);
+					let ret = '{"Access-Token":"' + user.access_token + '", "uid":"' + uid + '"}';
+					console.log('headers='+ret);
+					return JSON.parse(ret);
+				}
+				let ret = '{"Access-Token":""}';
+				return JSON.parse(ret);
+			},
+
+			getApnUploadRequestUrl() {
+				return apnUploadRequestUrl();
+			},
+
 			// 获取应用列表
 			getApplications() {
 				let param = {
@@ -271,6 +307,15 @@
 				this.editFormVisible = true;
 				this.editFormTitle = '编辑应用程序';
 				this.editForm.editing = true;
+
+				this.isIosPlatformShow = false;
+				this.isAndroidPlatformShow = false;
+				if (0==row.platform) {
+					this.isIosPlatformShow = true;
+				}
+				else if (1==row.platform) {
+					this.isAndroidPlatformShow = true;
+				}
 
 				this.editForm.uid = row.uid;
 				this.editForm.name = row.name;
@@ -360,6 +405,9 @@
 				this.editFormVisible = true;
 				this.editFormTitle = '添加应用';
 				this.editForm.editing = false;
+
+				this.isIosPlatformShow = false;
+				this.isAndroidPlatformShow = false;
 
 				_this.editForm.uid = '';
 				_this.editForm.name = '';

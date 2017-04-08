@@ -57,6 +57,8 @@ export const editUser = params => { return axios.get(`${base}/user/edit`, { para
 
 export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }); };
 
+// APN P12 upload url.
+export const apnUploadRequestUrl = () => { return `${base}/apn/upload`; };
 
 /**
  * 获取accessToken
@@ -70,6 +72,21 @@ export const getAccessToken = () => {
     return JSON.parse(ret);
   }
   let ret = '{"Content-Type":"application/json", "Access-Token":""}';
+  return JSON.parse(ret);
+}
+
+/**
+ * 获取AccessToken Headers object
+ */
+export const getAccessTokenHeaders = (uid) => {
+  var user = sessionStorage.getItem('user');
+  if (user) {
+    user = JSON.parse(user);
+    let ret = '{"Access-Token":"' + user.access_token + '", "uid":"' + uid + '"}';
+    console.log('headers='+ret);
+    return JSON.parse(ret);
+  }
+  let ret = '{"Access-Token":""}';
   return JSON.parse(ret);
 }
 
