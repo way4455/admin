@@ -6,6 +6,7 @@ import AppUserList from './pages/appuser/appuserlist.vue'
 import AppList from './pages/app/applist.vue'
 import DataPointList from './pages/datapoint/datapointlist.vue'
 import AlarmNotifList from './pages/alarmnotif/alarmnotiflist.vue'
+import AlertList from './pages/alert/alertlist.vue'
 import LogcatList from './pages/logcat/logcatlist.vue'
 import Home from './pages/Home.vue'
 import Main from './pages/Main.vue'
@@ -88,6 +89,16 @@ let routes = [
       leaf: true, // 只有一个节点
       children:[
         {path:'/alarmnotif', component: AlarmNotifList, name:'报警通知列表', hidden:false}
+      ]
+    },
+    {
+      path: '/',
+      component: Home,
+      name: '报警列表',
+      iconCls: 'el-icon-message',
+      leaf: true, // 只有一个节点
+      children:[
+        {path:'/alert', component: AlertList, name:'报警列表', hidden:false}
       ]
     },
     {

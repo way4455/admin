@@ -46,6 +46,9 @@ export const addAlarmNoti = (params, headers) => { return axios.post(`${base}/al
 export const delAlarmNoti = (params, headers) => { return axios.post(`${base}/alarmnoti/del`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
 export const updateAlarmNoti = (params, headers) => { return axios.post(`${base}/alarmnoti/update`, params, {headers:headers}).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
 
+// 获取报警信息
+export const getAlertList = (params, headers) => { return axios.get(`${base}/alert/list`, { params: params, headers:headers }); };
+
 
 export const getUserList = params => { return axios.get(`${base}/user/list`, { params: params }); };
 
