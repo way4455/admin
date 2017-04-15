@@ -17,7 +17,7 @@
 
 		<!--列表-->
 		<template>
-			<el-table :data="alerts" border highlight-current-row v-loading="listLoading" style="width: 100%;">
+			<el-table :data="alerts" border stripe highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<!--el-table-column type="index" width="60">
 				</el-table-column-->
 				<el-table-column prop="productName" label="产品名称" min-width="140" sortable>
@@ -195,7 +195,7 @@
 
 			// 格式化时间显示
 			formatReportDate: function(row, column) {
-				return row.reportTime;//getYYYYMMDDHHmmssFromTimestamp('YYYY-MM-DD HH:mm:SS', row.create_at);
+				return getYYYYMMDDHHmmssFromTimestamp('YYYY-MM-DD HH:mm:SS', row.reportTime);
 			},
 
 			// 格式化数据端点类型
