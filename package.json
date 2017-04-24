@@ -1,8 +1,8 @@
 {
-  "name": "vueadmin",
+  "name": "OraWebAdmin",
   "version": "1.0.0",
-  "description": "vue admin project",
-  "author": "taylor <709161610@qq.com>",
+  "description": "OraWebAdmin project",
+  "author": "coresdk <coresdk2017@163.com>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

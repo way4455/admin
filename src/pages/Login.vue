@@ -25,8 +25,8 @@
       return {
         logining: false,
         ruleForm2: {
-          account: 'admin',
-          checkPass: 'admin12567'
+          account: '',
+          checkPass: ''
         },
         rules2: {
           account: [
@@ -38,7 +38,7 @@
             //{ validator: validaePass2 }
           ]
         },
-        checked: true
+        checked: false
       };
     },
     methods: {
