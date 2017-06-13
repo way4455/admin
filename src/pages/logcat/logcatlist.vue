@@ -44,7 +44,7 @@
 <script>
 	import util from '../../common/util'
 	import NProgress from 'nprogress'
-	import { getAccessToken, getLogcatList } from '../../api/api';
+	import { getAccessToken, getLogcatList, getYYYYMMDDHHmmssFromTimestamp } from '../../api/api';
 
 	export default {
 		data() {
@@ -65,6 +65,11 @@
 			//formatActivated: function(row, column) {
 			//	return row.activated === true ? '已激活' : row.activated === false ? '未激活' : '未知状态';
 			//},
+
+			// 格式化时间显示
+			formatReportDate: function(row, column) {
+				return getYYYYMMDDHHmmssFromTimestamp('YYYY-MM-DD HH:mm:SS', row.time);
+			},
 
 			handleCurrentChange(val) {
 				this.page = val;

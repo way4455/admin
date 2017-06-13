@@ -1,13 +1,17 @@
 import axios from 'axios';
 
 // let base = '';
-//let base = 'http://127.0.0.1/OraAPIServer/v2';
+//let base = 'http://127.0.0.1:8080';
+let base = 'http://127.0.0.1/OraAPIServer/v2';
 //let base = 'http://192.168.1.88:8080/OraAPIServer/v2';
-let base = 'http://47.93.49.250:23780/OraAPIServer/v2';
+//let base = 'http://47.93.49.250:23780/OraAPIServer/v2';
 
 // 登录请求
 export const requestLogin = params => { return axios.post(`${base}/admin/login`, params).then(res => res.data).catch(err => {return {code:-2,msg:"服务不可用"}}); };
 
+// 获取概览
+export const getOverViewDetails = (params, headers) => { return axios.get(`${base}/admin/overview`, { params: params, headers:headers }); };
+//export const getOverViewDetails = (params, headers) => { return axios.get(`${base}/admin/overview`, { params: params, headers:headers }).then(res => res.data).catch(err => {return {ret:-2,msg:"服务不可用"}}); };
 // 获取网关列表数据
 //export const getGateWayList = params => { return axios.get(`${base}/gateway/list`, { params: params }); };
 export const getGateWayList = (params, headers) => { return axios.get(`${base}/gateway/list`, { params: params, headers:headers }); };

@@ -2,6 +2,7 @@ import Login from './pages/Login.vue'
 import NotFound from './pages/404.vue'
 import AdminInfo from './pages/admin/admininfo.vue'
 import GateWayList from './pages/gateway/gatewaylist.vue'
+import Overview from './pages/gateway/gatewayoverview.vue'
 import AppUserList from './pages/appuser/appuserlist.vue'
 import AppList from './pages/app/applist.vue'
 import DataPointList from './pages/datapoint/datapointlist.vue'
@@ -46,8 +47,9 @@ let routes = [
       component: Home,
       name: '网关设备',
       iconCls: 'el-icon-message',
-      leaf: true, // 只有一个节点
+      leaf: false, // 只有一个节点
       children:[
+        {path:'/overview', component: Overview, name:'设备概览', hidden:false},
         {path:'/gateway', component: GateWayList, name:'设备列表', hidden:false}
       ]
     },
