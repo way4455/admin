@@ -47,7 +47,7 @@
   --border-color-base: var(--color-extra-light-silver);
   --border-color-hover: var(--color-base-silver);
   --border-base: var(--border-width-base) var(--border-style-base) var(--border-color-base);
-  --border-radius-base: 4px;
+  --border-radius-base: 0px;
   --border-radius-small: 2px;
   --border-radius-circle: 100%;
 
