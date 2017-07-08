@@ -109,6 +109,7 @@ let routes = [
       name: '日志信息',
       iconCls: 'el-icon-message',
       leaf: true, // 只有一个节点
+      hidden: true,
       children:[
         {path:'/logcat', component: LogcatList, name:'日志信息', hidden:false}
       ]

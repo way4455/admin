@@ -31,7 +31,7 @@
 				<el-table-column inline-template :context="_self" label="操作" min-width="160">
 					<span>
 									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
-									<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
+									<!--el-button type="danger" size="small" @click="handleDel(row)">删除</el-button-->
 								</span>
 				</el-table-column>
 			</el-table>

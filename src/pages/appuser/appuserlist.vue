@@ -26,7 +26,7 @@
 				</el-table-column>
 				<el-table-column prop="nick" label="用户昵称" width="200" sortable>
 				</el-table-column>
-				<el-table-column prop="enable" label="是否激活" :formatter="formatActivated" width="120" sortable>
+				<!--el-table-column prop="enable" label="是否激活" :formatter="formatActivated" width="120" sortable-->
 				</el-table-column>
 				<el-table-column prop="register_at" label="注册时间" min-width="160" sortable>
 				</el-table-column>

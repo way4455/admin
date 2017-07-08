@@ -20,20 +20,20 @@
 			<el-table :data="alerts" border stripe highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<!--el-table-column type="index" width="60">
 				</el-table-column-->
-				<el-table-column prop="productName" label="产品名称" min-width="140" sortable>
+				<el-table-column prop="productName" label="产品名称" min-width="100" sortable>
 				</el-table-column>
-				<el-table-column prop="alertContent" label="告警内容" min-width="120" sortable>
+				<el-table-column prop="alertContent" label="告警内容" min-width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="reportTime" label="上报时间" :formatter="formatReportDate" min-width="180" sortable>
+				<el-table-column prop="reportTime" label="上报时间" :formatter="formatReportDate" min-width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="wasRead" label="应用类型" :formatter="formatRead" min-width="100" sortable>
+				<el-table-column prop="wasRead" label="状态" :formatter="formatRead" min-width="100" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="160">
+				<!--el-table-column inline-template :context="_self" label="操作" min-width="80">
 					<span>
-									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
-									<!--el-button type="danger" size="small" @click="handleDel(row)">删除</el-button-->
+									<el-button size="small" @click="handleEdit(row)">查看</el-button>
+									<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
 								</span>
-				</el-table-column>
+				</el-table-column-->
 			</el-table>
 		</template>
 
