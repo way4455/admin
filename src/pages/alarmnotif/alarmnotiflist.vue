@@ -338,6 +338,11 @@
 					this.items = res.data.items;
 					this.listLoading = false;
 					NProgress.done();
+				}).catch(err => {
+					this.logining = false;
+                	NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
 				});
 			},
 			//删除
@@ -363,9 +368,12 @@
 						_this.getItems();
 					});
 
-				}).catch(() => {
-
-				});
+				}).catch(err => {
+					this.logining = false;
+                	NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
+				})
 			},
 			mustShowApn() {
 				var b = false;
@@ -466,6 +474,11 @@
 									});
 									_this.editFormVisible = false;
 									_this.getItems();
+								}).catch(err => {
+									this.logining = false;
+									NProgress.done();
+									var errcode = err.response.data.error.code;
+									constErrorProcess(errcode, this);
 								});
 							} else {
 								//编辑
@@ -496,6 +509,11 @@
 									});
 									_this.editFormVisible = false;
 									_this.getItems();
+								}).catch(err => {
+									this.logining = false;
+									NProgress.done();
+									var errcode = err.response.data.error.code;
+									constErrorProcess(errcode, this);
 								});
 
 							}
@@ -514,7 +532,7 @@
 				this.isIndexReadOnly = false;
 
 				this.editFormVisible = true;
-				this.editFormTitle = '添加心规则';
+				this.editFormTitle = '添加新规则';
 				this.editForm.editing = false;
 
 				this.isUidShow = false;

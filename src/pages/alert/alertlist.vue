@@ -269,6 +269,11 @@
 					this.alerts = res.data.items;
 					this.listLoading = false;
 					NProgress.done();
+				}).catch(err => {
+					this.logining = false;
+                	NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
 				});
 			},
 			//删除
@@ -292,6 +297,11 @@
 							type: 'success'
 						});
 						_this.getAlerts();
+					}).catch(err => {
+						this.logining = false;
+						NProgress.done();
+						var errcode = err.response.data.error.code;
+						constErrorProcess(errcode, this);
 					});
 
 				}).catch(() => {
@@ -360,6 +370,11 @@
 									});
 									_this.editFormVisible = false;
 									_this.getAlerts();
+								}).catch(err => {
+									this.logining = false;
+									NProgress.done();
+									var errcode = err.response.data.error.code;
+									constErrorProcess(errcode, this);
 								});
 							} else {
 								//编辑
@@ -381,6 +396,11 @@
 										title: '成功',
 										message: '提交成功',
 										type: 'success'
+									}).catch(err => {
+										this.logining = false;
+										NProgress.done();
+										var errcode = err.response.data.error.code;
+										constErrorProcess(errcode, this);
 									});
 									_this.editFormVisible = false;
 									_this.getAlerts();

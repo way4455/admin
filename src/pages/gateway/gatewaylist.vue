@@ -84,6 +84,7 @@
 	import util from '../../common/util'
 	import NProgress from 'nprogress'
 	import { getAccessToken, getGateWayList, addGateWayDevice, delGateWayDevice, updateGateWayDevice } from '../../api/api';
+	import { checkTokenInvliad, constErrorProcess } from '../../err/err.js';
 
 	export default {
 		data() {
@@ -192,6 +193,11 @@
 					this.devices = res.data.devices;
 					this.listLoading = false;
 					NProgress.done();
+				}).catch(err => {
+					this.logining = false;
+                	NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
 				});
 			},
 			//删除
@@ -217,6 +223,11 @@
 							type: 'success'
 						});
 						_this.getDevices();
+					}).catch(err => {
+						this.logining = false;
+						NProgress.done();
+						var errcode = err.response.data.error.code;
+						constErrorProcess(errcode, this);
 					});
 
 				}).catch(() => {
@@ -268,6 +279,11 @@
 									});
 									_this.editFormVisible = false;
 									_this.getDevices();
+								}).catch(err => {
+									this.logining = false;
+									NProgress.done();
+									var errcode = err.response.data.error.code;
+									constErrorProcess(errcode, this);
 								});
 							} else {
 								//编辑
@@ -291,6 +307,11 @@
 									});
 									_this.editFormVisible = false;
 									_this.getDevices();
+								}).catch(err => {
+									this.logining = false;
+									NProgress.done();
+									var errcode = err.response.data.error.code;
+									constErrorProcess(errcode, this);
 								});
 
 							}

@@ -10,7 +10,7 @@
     </el-form-item>
     <el-checkbox v-model="checked" checked style="margin:0px 0px 35px 0px;">记住密码</el-checkbox>
   <el-form-item style="width:100%;">
-    <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit2" :loading="logining">登录</el-button>
+    <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit3" :loading="logining">登录</el-button>
     <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
     <div class="login_copyright">深圳市大河秦社科技发展有限公司</div>
   </el-form-item>
@@ -75,6 +75,55 @@
             return false;
           }
         });
+      },
+      handleSubmit3(ev) {
+          var _this = this;
+          this.$refs.ruleForm2.validate((valid) => {
+            if (valid) {
+              //_this.$router.replace('/table');
+              this.logining = true;
+              NProgress.start();
+              var loginParams = { corp_id:"0000", phone: this.ruleForm2.account, password: this.ruleForm2.checkPass };
+              requestLogin(loginParams).then(data => {
+                console.log("data is:"+JSON.stringify(data.data));
+                this.logining = false;
+                NProgress.done();
+                let { access_token, code, refresh_token, user_id, user_account, user_name, msg} = data.data;
+                console.log("access_token:"+access_token+", code:"+code+", user_account:"+user_account+", user_name:"+user_name+", user_id="+user_id+", msg:"+msg);
+                if (code !== 0) {
+                  this.$notify({
+                    title: '提示',
+                    message: msg,
+                    type: 'error'
+                  });
+                } else {
+                  sessionStorage.setItem('user', JSON.stringify(data.data));
+                  this.$router.push({ path: '/admininfo' });
+                }
+              }).catch(err => {
+                this.logining = false;
+                NProgress.done();
+
+                this.$notify({
+                  title: '错误',
+                  message: ''+err.response.data.error.code,
+                  type: 'error'
+                });
+
+                // console.log('Return with error:' + err);
+                // console.log('Return with error:' + err.response);
+                // console.log('Return with error:' + err.response.data.error);
+                // console.log('Return with error:' + err.response.data.error.code);
+                // console.log('Return with error:' + err.response.data.error.msg);
+                // console.log('Return with error:' + JSON.stringify(err));
+                // console.log('Return with error:' + JSON.stringify(err.error));
+                // console.log('Return with error:' + JSON.stringify(err.data));
+              });
+            } else {
+              console.log('error submit!!');
+              return false;
+            }
+          });
       }
     }
   }
