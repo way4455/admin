@@ -45,6 +45,7 @@
 	import util from '../../common/util'
 	import NProgress from 'nprogress'
 	import { getAccessToken, getLogcatList, getYYYYMMDDHHmmssFromTimestamp } from '../../api/api';
+	import { checkTokenInvliad, constErrorProcess } from '../../err/err.js';
 
 	export default {
 		data() {
@@ -98,6 +99,11 @@
 					this.logs = res.data.logs;
 					this.listLoading = false;
 					NProgress.done();
+				}).catch(err => {
+					this.logining = false;
+					NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
 				});
 			},
     },

@@ -118,6 +118,7 @@
 	import util from '../../common/util'
 	import NProgress from 'nprogress'
 	import { getAccessToken, getAlarmNotiList, addAlarmNoti, delAlarmNoti, updateAlarmNoti, getiOSApplicationList, getAndroidApplicationList } from '../../api/api';
+	import { checkTokenInvliad, constErrorProcess } from '../../err/err.js';
 
 	export default {
 		data() {
@@ -307,6 +308,11 @@
 					this.iosapps = res.data.applications;
 					this.listLoading = false;
 					NProgress.done();
+				}).catch(err => {
+					this.logining = false;
+                	NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
 				});
 			},
 			// 获取Android应用列表
@@ -321,6 +327,11 @@
 					this.androidapps = res.data.applications;
 					this.listLoading = false;
 					NProgress.done();
+				}).catch(err => {
+					this.logining = false;
+                	NProgress.done();
+					var errcode = err.response.data.error.code;
+					constErrorProcess(errcode, this);
 				});
 			},
 			// 获取列表
